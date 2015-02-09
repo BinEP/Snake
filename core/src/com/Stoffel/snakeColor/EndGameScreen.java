@@ -35,15 +35,15 @@ public class EndGameScreen implements Screen {
 		game.batch.begin();
 		game.setBitmapFont("joystix.ttf", 40);
 		game.g.setColor(Color.WHITE);
-		CenteredText.draw(String.valueOf(score), 450, game);
+		CenteredText.draw(String.valueOf(score), 80, game);
 
 		game.setBitmapFont("joystix.ttf", 60);
 
-		CenteredText.draw("You Lose!", 170, game);
+		CenteredText.draw("You Lose!", 370, game);
 
 		game.setBitmapFont("joystix.ttf", 26);
 
-		CenteredText.draw("Enter to Restart", 320, game);
+		CenteredText.draw("Enter to Restart", 210, game);
 		
 		if (Gdx.input.isKeyPressed(Keys.ENTER)) {
 			

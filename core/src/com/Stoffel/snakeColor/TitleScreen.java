@@ -4,6 +4,7 @@ import java.awt.Font;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,7 +17,7 @@ public class TitleScreen implements Screen {
 	public TitleScreen(Snake gam) {
 		game = gam;
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 500, 500);
+		camera.setToOrtho(false, Window.WIDTH, Window.HEIGHT);
 		
 	}
 	@Override
@@ -38,10 +39,10 @@ public class TitleScreen implements Screen {
 		
 		game.batch.begin();
 		
-		game.font.draw(game.batch, "Ready to play Snake!", 100, 150);
-		game.font.draw(game.batch, "Tap to begin!", 100, 100);
-		
-		
+//		game.font.draw(game.batch, "Ready to play Snake!", 100, 150);
+//		game.font.draw(game.batch, "Tap to begin!", 100, 100);
+//		
+//		
 		
 		
 		game.setBitmapFont("joystix.ttf", 80);
@@ -60,10 +61,11 @@ public class TitleScreen implements Screen {
 		
 		game.batch.end();
 		
-		if (Gdx.input.isTouched()) {
+		if (Gdx.input.isTouched() || Gdx.input.isKeyPressed(Keys.ENTER)) {
 				game.setScreen(new PlayScreen(game));
 				dispose();
 		}
+		
 		
 //		keyMap[keyIndex] = e.getKeyCode();
 //		keyIndex++;
