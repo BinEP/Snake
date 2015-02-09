@@ -86,8 +86,15 @@ public class PlayScreen implements Screen {
 		game.g.begin();
 		game.g.setColor(Color.WHITE);
 
-		game.g.rect(0, 0, 499, 477);
-
+		
+//		game.g.rect(0, 0, Window.WIDTH, Window.HEIGHT);
+		game.g.set(ShapeType.Filled);
+		
+		game.g.rectLine(0, 0, 0, 500, 8);
+		game.g.rectLine(0, 500, 500, 500, 8);
+		game.g.rectLine(500, 500, 500, 0, 8);
+		game.g.rectLine(0, 0, 500, 0, 8);
+		
 		game.setBitmapFont("joystix.ttf", 40);
 		game.g.setColor(Color.WHITE);
 
@@ -108,27 +115,20 @@ public class PlayScreen implements Screen {
 
 			i++;
 		}
-		if (paused) {
-			game.setBitmapFont("joystix.ttf", 60);
-			game.g.setColor(Color.WHITE);
-			CenteredText.draw("Paused", 200, game);
-
-			drawColorOptions(300);
-		}
+		
 		game.g.end();
 		
 		game.batch.begin();
 		
 		if (paused) {
 			game.setBitmapFont("joystix.ttf", 60);
-			
-			CenteredText.draw("Paused", 200, game);
+			game.g.setColor(Color.WHITE);
+			CenteredText.draw("Paused", 300, game);
 
-			
+			drawColorOptions(200);
 		}
 		
-		
-		CenteredText.draw(String.valueOf(score), 450, game);
+		CenteredText.draw(String.valueOf(score), 50, game);
 		
 		for (Fruit fruit : fruits) {
 			game.batch.draw(fruit, fruit.x, fruit.y);
@@ -148,7 +148,7 @@ public class PlayScreen implements Screen {
 		if (Gdx.input.isKeyPressed(Keys.RIGHT))
 			right();
 
-		if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+		if (Gdx.input.isKeyJustPressed(Keys.SPACE)) {
 
 			playing = !playing;
 			paused = !paused;
@@ -162,7 +162,7 @@ public class PlayScreen implements Screen {
 		}
 		
 
-		if (TimeUtils.nanoTime() - lastMoveTime > (1000000000 / speed)) {
+		if (TimeUtils.nanoTime() - lastMoveTime > (1000000000 / speed) && playing) {
 
 			moves();
 
