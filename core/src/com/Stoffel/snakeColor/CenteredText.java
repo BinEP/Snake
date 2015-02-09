@@ -15,8 +15,8 @@ public class CenteredText {
 	
 	public static void draw(String text, int yVal, Snake game) {
 
-		int width = 800;
-		int height = 480;
+		int width = Window.WIDTH;
+		int height = Window.HEIGHT;
 		
 		TextBounds fontInfo =  game.font.getBounds(text);
 		

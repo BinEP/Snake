@@ -16,7 +16,7 @@ public class TitleScreen implements Screen {
 	public TitleScreen(Snake gam) {
 		game = gam;
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false);
+		camera.setToOrtho(false, 500, 500);
 		
 	}
 	@Override
@@ -45,16 +45,16 @@ public class TitleScreen implements Screen {
 		
 		
 		game.setBitmapFont("joystix.ttf", 80);
-		CenteredText.draw("SNAKE!!", 180, game);
+		CenteredText.draw("SNAKE!!", 320, game);
 		drawColorOptions(415);
 		game.setBitmapFont("joystix.ttf", 20);
 
-		CenteredText.draw("Press Enter to", 300, game);
-		CenteredText.draw("Start", 330, game);
+		CenteredText.draw("Press Enter to", 200, game);
+		CenteredText.draw("Start", 170, game);
 
 		game.setBitmapFont("joystix.ttf", 12);
 
-		CenteredText.draw("Press keys Up, Right, Down, Left to map new keys", 30, game);
+		CenteredText.draw("Press keys Up, Right, Down, Left to map new keys", 470, game);
 
 		
 		
@@ -123,7 +123,9 @@ public class TitleScreen implements Screen {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-
+//		game.batch.dispose();
+//		game.font.dispose();
+//		game.g.dispose();
 	}
 
 }

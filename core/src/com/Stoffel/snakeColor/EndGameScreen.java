@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 
 public class EndGameScreen implements Screen {
 
@@ -27,6 +28,11 @@ public class EndGameScreen implements Screen {
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 
+
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		game.batch.begin();
 		game.setBitmapFont("joystix.ttf", 40);
 		game.g.setColor(Color.WHITE);
 		CenteredText.draw(String.valueOf(score), 450, game);
@@ -44,6 +50,8 @@ public class EndGameScreen implements Screen {
 			game.setScreen(new TitleScreen(game));
 			dispose();
 		}
+		
+		game.batch.end();
 	}
 
 	@Override
