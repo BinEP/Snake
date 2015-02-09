@@ -1,12 +1,22 @@
 package com.Stoffel.snakeColor;
 
-import java.awt.Color;
 import java.awt.Font;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 
 public class EndGameScreen implements Screen {
 
+	public Snake game;
+	public int score;
+	
+	public EndGameScreen(Snake gam, int score) {
+		game = gam;
+		this.score = score;
+		
+	}
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
@@ -17,26 +27,28 @@ public class EndGameScreen implements Screen {
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 
-		g.setFont(new Font("Joystix", Font.BOLD, 40));
-		g.setColor(Color.WHITE);
-		CenteredText score1 = new CenteredText(String.valueOf(score), 500,
-				500, g, true, 450);
+		game.setBitmapFont("joystix.ttf", 40);
+		game.g.setColor(Color.WHITE);
+		CenteredText.draw(String.valueOf(score), 450, game);
 
-		g.setFont(new Font("Joystix", Font.BOLD, 60));
+		game.setBitmapFont("joystix.ttf", 60);
 
-		CenteredText lose = new CenteredText("You Lose!", 500, 500, g,
-				true, 170);
+		CenteredText.draw("You Lose!", 170, game);
 
-		g.setFont(new Font("Joystix", Font.BOLD, 26));
+		game.setBitmapFont("joystix.ttf", 26);
 
-		CenteredText restart = new CenteredText("Enter to Restart", 500,
-				500, g, true, 320);
+		CenteredText.draw("Enter to Restart", 320, game);
+		
+		if (Gdx.input.isKeyPressed(Keys.ENTER)) {
+			
+			game.setScreen(new TitleScreen(game));
+			dispose();
+		}
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.awt.Font;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
@@ -33,6 +34,8 @@ public class TitleScreen implements Screen {
 		camera.update();
 		
 		game.batch.setProjectionMatrix(camera.combined);
+		game.g.setProjectionMatrix(camera.combined);
+		
 		game.batch.begin();
 		
 		game.font.draw(game.batch, "Ready to play Snake!", 100, 150);
@@ -41,22 +44,17 @@ public class TitleScreen implements Screen {
 		
 		
 		
-		g.setFont(new Font("Joystix", Font.BOLD, 80));
-		CenteredText title1 = new CenteredText("SNAKE!!", 500, 500, g,
-				true, 180);
-		drawColorOptions(g, 415);
-		g.setFont(new Font("Joystix", Font.BOLD, 20));
+		game.setBitmapFont("joystix.ttf", 80);
+		CenteredText.draw("SNAKE!!", 180, game);
+		drawColorOptions(415);
+		game.setBitmapFont("joystix.ttf", 20);
 
-		CenteredText start1 = new CenteredText("Press Enter to", 500, 500,
-				g, true, 300);
-		CenteredText start2 = new CenteredText("Start", 500, 500, g, true,
-				330);
+		CenteredText.draw("Press Enter to", 300, game);
+		CenteredText.draw("Start", 330, game);
 
-		g.setFont(new Font("Joystix", Font.BOLD, 12));
+		game.setBitmapFont("joystix.ttf", 12);
 
-		CenteredText keyMapInstruct = new CenteredText(
-				"Press keys Up, Right, Down, Left to map new keys", 500,
-				500, g, true, 30);
+		CenteredText.draw("Press keys Up, Right, Down, Left to map new keys", 30, game);
 
 		
 		
@@ -67,14 +65,36 @@ public class TitleScreen implements Screen {
 				dispose();
 		}
 		
-		keyMap[keyIndex] = e.getKeyCode();
-		keyIndex++;
-		if (keyIndex > 3)
-			keyIndex = 0;
+//		keyMap[keyIndex] = e.getKeyCode();
+//		keyIndex++;
+//		if (keyIndex > 3)
+//			keyIndex = 0;
 
 		
 		
 	}
+	
+	public void drawColorOptions(int colorY) {
+
+		game.setBitmapFont("joystix.ttf", 45);
+		
+		game.g.setColor(Color.RED);
+		game.font.draw(game.batch, "R", 50, colorY);
+		game.g.setColor(Color.GREEN);
+		game.font.draw(game.batch, "G", 140, colorY);
+		game.g.setColor(Color.CYAN);
+		game.font.draw(game.batch, "B", 230, colorY);
+		game.g.setColor(Color.YELLOW);
+		game.font.draw(game.batch, "Y", 315, colorY);
+		game.g.setColor(Color.ORANGE);
+		game.font.draw(game.batch, "O", 410, colorY);
+		// game.g.setColor(Color.BLACK);
+		// game.g.drawString("W", 500, colorY);
+
+		game.g.setColor(Color.WHITE);
+
+	}
+
 
 	@Override
 	public void resize(int width, int height) {

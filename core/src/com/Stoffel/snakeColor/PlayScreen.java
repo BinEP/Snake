@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 
 import java.awt.AWTException;
@@ -72,51 +74,56 @@ public class PlayScreen implements Screen {
 		moves();
 
 		game.batch.begin();
-		g.setColor(Color.WHITE);
-		Graphics2D g2 = (Graphics2D) g;
-		g2.setStroke(new BasicStroke(15));
-		g2.drawRect(0, 0, 499, 477);
-		g2.setStroke(new BasicStroke(2));
+		game.g.begin();
+		game.g.setColor(Color.WHITE);
+		
+		game.g.rect(0, 0, 499, 477);
+		
+		
+		
 
-		if (playing || paused) {
-
-			g.setFont(new Font("Joystix", Font.BOLD, 40));
-			g.setColor(Color.WHITE);
-			CenteredText score1 = new CenteredText(String.valueOf(score), 500,
-					500, g, true, 450);
+			game.setBitmapFont("joystix.ttf", 40);
+			game.g.setColor(Color.WHITE);
+			
+			CenteredText.draw(String.valueOf(score), 450, game);
+			
 			int i = 0;
+			
+			
+			
+			
+			
 			for (Point body : snakeBody) {
 
-				g.setColor(snakeColor.get(i));
+				game.g.setColor(snakeColor.get(i));
+				game.g.set(ShapeType.Filled);
+				game.g.rect(body.x, body.y, bodySize, bodySize);
+				
+				game.g.setColor(Color.BLACK);
+				game.g.set(ShapeType.Line);
+				game.g.rect(body.x, body.y, bodySize, bodySize);
+				
 				i++;
-				g.fillRect(body.x, body.y, bodySize, bodySize);
-				g.setColor(Color.BLACK);
-				g.drawRect(body.x, body.y, bodySize, bodySize);
-
 			}
-			for (i = 0; i < fruitX.size(); i++) {
-				g.setColor(Color.BLACK);
-				int fx = fruitX.get(i);
-				int fy = fruitY.get(i);
-				g.drawRect(fx, fy, bodySize, bodySize);
-
-				// g.setColor(Color.WHITE);
-				g.setColor(fruitColor.get(i));
-
-				g.fillRect(fx + 1, fy + 1, bodySize - 2, bodySize - 2);
-
+			
+			
+			
+			
+			
+			for (Fruit fruit : fruits) {
+				game.batch.draw(fruit, fruit.x, fruit.y);
 			}
+			
 			if (paused) {
-				g.setFont(new Font("Joystix", Font.BOLD, 60));
-				g.setColor(Color.WHITE);
-				CenteredText pause = new CenteredText("Paused", 500, 500, g,
-						true, 200);
+				game.setBitmapFont("joystix.ttf", 60);
+				game.g.setColor(Color.WHITE);
+				CenteredText.draw("Paused", 200, game);
 
-				drawColorOptions(g, 300);
+				drawColorOptions(300);
 			}
 
-		}
-
+		
+			game.g.end();
 		game.batch.end();
 
 		if (Gdx.input.isKeyPressed(upKey)) up();
@@ -129,26 +136,39 @@ public class PlayScreen implements Screen {
 			playing = !playing;
 			paused = !paused;
 		}
-
-		if (Gdx.input.isKeyPressed(Keys.R))
-			fruitColor.set(randFruitNum(), Color.RED);
-
-		if (Gdx.input.isKeyPressed(Keys.G))
-			fruitColor.set(randFruitNum(), Color.GREEN);
-
-		if (Gdx.input.isKeyPressed(Keys.B))
-			fruitColor.set(randFruitNum(), Color.CYAN);
-
-		if (Gdx.input.isKeyPressed(Keys.Y))
-			fruitColor.set(randFruitNum(), Color.YELLOW);
-
-		if (Gdx.input.isKeyPressed(Keys.O))
-			fruitColor.set(randFruitNum(), Color.ORANGE);
-
-		if (Gdx.input.isKeyPressed(Keys.W))
-			fruitColor.set(randFruitNum(), Color.WHITE);
-
+		
+		if (playing == false && paused == false) {
+			
+			game.setScreen(new EndGameScreen(game, score));
+			dispose();
+			
+		}
 	}
+	
+//	public void switchFruit() {
+//		
+//		if (Gdx.input.isKeyPressed(Keys.R))
+//			fruitColor.set(randFruitNum(), Color.RED);
+//
+//		if (Gdx.input.isKeyPressed(Keys.G))
+//			fruitColor.set(randFruitNum(), Color.GREEN);
+//
+//		if (Gdx.input.isKeyPressed(Keys.B))
+//			fruitColor.set(randFruitNum(), Color.CYAN);
+//
+//		if (Gdx.input.isKeyPressed(Keys.Y))
+//			fruitColor.set(randFruitNum(), Color.YELLOW);
+//
+//		if (Gdx.input.isKeyPressed(Keys.O))
+//			fruitColor.set(randFruitNum(), Color.ORANGE);
+//
+//		if (Gdx.input.isKeyPressed(Keys.W))
+//			fruitColor.set(randFruitNum(), Color.WHITE);
+//		
+//		
+//		
+//		
+//	}
 
 	@Override
 	public void resize(int width, int height) {
@@ -181,7 +201,7 @@ public class PlayScreen implements Screen {
 	}
 	
 	
-	private boolean playing = false;
+	private boolean playing = true;
 	private boolean paused = false;
 
 	private ArrayList<Point> snakeBody = new ArrayList<Point>();
@@ -193,10 +213,10 @@ public class PlayScreen implements Screen {
 	private Point head = new Point(250, 250);
 	private int numOfFruits = 4;
 
-	private ArrayList<Integer> fruitX = new ArrayList<Integer>();
-	private ArrayList<Integer> fruitY = new ArrayList<Integer>();
-
-	private ArrayList<Color> fruitColor = new ArrayList<Color>();
+//	private ArrayList<Integer> fruitX = new ArrayList<Integer>();
+//	private ArrayList<Integer> fruitY = new ArrayList<Integer>();
+//
+//	private ArrayList<Color> fruitColor = new ArrayList<Color>();
 	
 	private ArrayList<Fruit> fruits = new ArrayList<Fruit>();
 
@@ -234,6 +254,7 @@ public class PlayScreen implements Screen {
 
 			head.x += deltaX;
 			head.y += deltaY;
+			
 			nextHead = new Point(head.x + deltaX, head.y + deltaY);
 
 			for (int i = snakeBody.size() - 1; i > 0; i--) {
@@ -248,9 +269,9 @@ public class PlayScreen implements Screen {
 
 			snakeBody.set(0, new Point(head.x, head.y));
 
-			for (int i = 0; i < fruitX.size(); i++) {
-				int fx = fruitX.get(i);
-				int fy = fruitY.get(i);
+			for (int i = 0; i < fruits.size(); i++) {
+				int fx = fruits.get(i).x;
+				int fy = fruits.get(i).y;
 				if (Math.abs(head.x - fx) < 5 && Math.abs(head.y - fy) < 5) {
 					addBodySquare(i);
 				}
@@ -505,7 +526,7 @@ public class PlayScreen implements Screen {
 		
 	}
 	
-public Fruit newRandomFruit(int x, int y) {
+	public Fruit newRandomFruit(int x, int y) {
 		
 		Fruit newFruit;
 		int r = MathUtils.random(Fruits.values().length - 1);
@@ -518,12 +539,7 @@ public Fruit newRandomFruit(int x, int y) {
 		return newFruit;
 		
 	}
-
-	public int randFruitNum() {
-
-		return (int) (Math.random() * fruitColor.size());
-	}
-
+	
 	public void addGoodFruit(int fruitIndex) {
 
 		int x = randNum();
@@ -575,23 +591,24 @@ public Fruit newRandomFruit(int x, int y) {
 
 	}
 
-	public void drawColorOptions(Graphics g, int colorY) {
+	public void drawColorOptions(int colorY) {
 
-		g.setFont(new Font(Font.DIALOG, Font.BOLD, 45));
-		g.setColor(Color.RED);
-		g.drawString("R", 50, colorY);
-		g.setColor(Color.GREEN);
-		g.drawString("G", 140, colorY);
-		g.setColor(Color.CYAN);
-		g.drawString("B", 230, colorY);
-		g.setColor(Color.YELLOW);
-		g.drawString("Y", 315, colorY);
-		g.setColor(Color.ORANGE);
-		g.drawString("O", 410, colorY);
-		// g.setColor(Color.BLACK);
-		// g.drawString("W", 500, colorY);
+		game.setBitmapFont("joystix.ttf", 45);
+		
+		game.g.setColor(Color.RED);
+		game.font.draw(game.batch, "R", 50, colorY);
+		game.g.setColor(Color.GREEN);
+		game.font.draw(game.batch, "G", 140, colorY);
+		game.g.setColor(Color.CYAN);
+		game.font.draw(game.batch, "B", 230, colorY);
+		game.g.setColor(Color.YELLOW);
+		game.font.draw(game.batch, "Y", 315, colorY);
+		game.g.setColor(Color.ORANGE);
+		game.font.draw(game.batch, "O", 410, colorY);
+		// game.g.setColor(Color.BLACK);
+		// game.g.drawString("W", 500, colorY);
 
-		g.setColor(Color.WHITE);
+		game.g.setColor(Color.WHITE);
 
 	}
 
