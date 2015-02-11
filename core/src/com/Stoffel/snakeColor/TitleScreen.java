@@ -17,7 +17,7 @@ public class TitleScreen implements Screen {
 	public TitleScreen(Snake gam) {
 		game = gam;
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, Window.WIDTH, Window.HEIGHT);
+		camera.setToOrtho(false, game.width, game.height);
 		
 	}
 	@Override

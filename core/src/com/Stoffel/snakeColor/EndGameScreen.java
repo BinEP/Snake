@@ -13,9 +13,9 @@ public class EndGameScreen implements Screen {
 	public Snake game;
 	public int score;
 	
-	public EndGameScreen(Snake gam, int score) {
+	public EndGameScreen(Snake gam) {
 		game = gam;
-		this.score = score;
+		this.score = game.score;
 		
 	}
 	@Override

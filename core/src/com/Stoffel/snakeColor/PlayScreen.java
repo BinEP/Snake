@@ -6,64 +6,50 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
-import java.awt.AWTException;
-import java.awt.BasicStroke;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-import javax.swing.Timer;
-
-public class PlayScreen implements Screen {
+public class PlayScreen implements Screen, ActionListener {
 
 	public Snake game;
 	public long lastMoveTime;
-	
+
+	public Timer timer;
+
 	public OrthographicCamera camera;
-	
-	public int width;
-	public int height;
+
+	// public int width = 800;
+	// public int height = 480;
 
 	public enum Fruits {
 
 		apple, orange, strawberry, pear, banana, watermelon;
 
-		
-		}
-		
-		
-	
+	}
 
 	public PlayScreen(Snake gam) {
 
 		game = gam;
 
 		camera = new OrthographicCamera();
-		width = Window.WIDTH;
-		height = Window.HEIGHT;
-		camera.setToOrtho(false, width, height);
-		
-		
+
+		camera.setToOrtho(false, game.width, game.height);
+
 		randFruitSetup();
 		resetBody();
+
+		timer = new Timer();
+		updateTimer();
 		moves();
 		// timer.start();
 
@@ -78,27 +64,23 @@ public class PlayScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
-		
+
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+
 		game.g.begin();
 		game.g.setColor(Color.WHITE);
 
-		
-//		game.g.rect(0, 0, Window.WIDTH, Window.HEIGHT);
+		// game.g.rect(0, 0, Window.WIDTH, Window.HEIGHT);
 		game.g.set(ShapeType.Filled);
-		
-		game.g.rectLine(0, 0, 0, Window.HEIGHT, 8);
-		game.g.rectLine(0, Window.HEIGHT, Window.WIDTH, Window.HEIGHT, 8);
-		game.g.rectLine(Window.WIDTH, Window.HEIGHT, Window.WIDTH, 0, 8);
-		game.g.rectLine(0, 0, Window.WIDTH, 0, 8);
-		
+
+		game.g.rectLine(0, 0, 0, game.width, 8);
+		game.g.rectLine(0, game.height, game.width, game.height, 8);
+		game.g.rectLine(game.width, game.height, game.width, 0, 8);
+		game.g.rectLine(0, 0, game.width, 0, 8);
+
 		game.setBitmapFont("joystix.ttf", 40);
 		game.g.setColor(Color.WHITE);
-
-		
-		
 
 		int i = 0;
 
@@ -114,11 +96,11 @@ public class PlayScreen implements Screen {
 
 			i++;
 		}
-		
+
 		game.g.end();
-		
+
 		game.batch.begin();
-		
+
 		if (paused) {
 			game.setBitmapFont("joystix.ttf", 60);
 			game.g.setColor(Color.WHITE);
@@ -126,16 +108,13 @@ public class PlayScreen implements Screen {
 
 			drawColorOptions(200);
 		}
-		
-		CenteredText.draw(String.valueOf(score), 50, game);
-		
+
+		CenteredText.draw(String.valueOf(game.score), 50, game);
+
 		for (Fruit fruit : fruits) {
 			game.batch.draw(fruit, fruit.x, fruit.y);
 		}
 
-		
-
-		
 		game.batch.end();
 
 		if (Gdx.input.isKeyPressed(Keys.UP))
@@ -155,17 +134,17 @@ public class PlayScreen implements Screen {
 
 		if (playing == false && paused == false) {
 
-			game.setScreen(new EndGameScreen(game, score));
+			game.setScreen(new EndGameScreen(game));
 			dispose();
 
 		}
-		
 
-		if (TimeUtils.nanoTime() - lastMoveTime > (1000000000 / speed) && playing) {
-
-			moves();
-
-		}
+//		if (TimeUtils.nanoTime() - lastMoveTime > (1000000000 / speed)
+//				&& playing) {
+//
+//			moves();
+//
+//		}
 	}
 
 	// public void switchFruit() {
@@ -197,24 +176,30 @@ public class PlayScreen implements Screen {
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 
-		
 		camera.setToOrtho(false, width, height);
 		camera.update();
-		this.width = width;
-		this.height = height;
-		
+
+		game.batch.setProjectionMatrix(camera.combined);
+		game.g.setProjectionMatrix(camera.combined);
+
+		game.width = width;
+		game.height = height;
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
 
+		playing = false;
+		paused = true;
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-
+		playing = true;
+		paused = false;
 	}
 
 	@Override
@@ -230,9 +215,29 @@ public class PlayScreen implements Screen {
 		for (Fruit f : fruits) {
 			f.dispose();
 		}
-		
-		
-		
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+
+		moves();
+
+	}
+
+	public void updateTimer() {
+
+		timer.clear();
+		timer.scheduleTask(new Task() {
+
+			@Override
+			public void run() {
+				moves();
+			}
+
+		}, 0, (float) (1 / speed));
+
 	}
 
 	private boolean playing = true;
@@ -280,7 +285,7 @@ public class PlayScreen implements Screen {
 	private int origSpeed = bodySize;
 	private double speed = origSpeed;
 
-	private int score = 0;
+	// private int score = 0;
 
 	public void moves() {
 
@@ -290,34 +295,35 @@ public class PlayScreen implements Screen {
 		nextHead = new Point(head.x + deltaX, head.y + deltaY);
 
 		for (int i = snakeBody.size() - 1; i > 0; i--) {
-			
+
 			if (head.x == snakeBody.get(i).x && head.y == snakeBody.get(i).y) {
 				playing = false;
 			}
 			snakeBody.set(i, snakeBody.get(i - 1));
-			
+
 		}
-		
+
 		snakeBody.set(0, new Point(head.x, head.y));
-		
+
 		for (int i = 0; i < fruits.size(); i++) {
-			
+
 			int fx = fruits.get(i).x;
 			int fy = fruits.get(i).y;
-//			headR.x = head.x;
-//			headR.y = head.y;
-//			
-//			if (fruits.get(i).r.overlaps(headR)) {
-//				addBodySquare(i);
-//				
-//			}
-			
+			// headR.x = head.x;
+			// headR.y = head.y;
+			//
+			// if (fruits.get(i).r.overlaps(headR)) {
+			// addBodySquare(i);
+			//
+			// }
+
 			if (Math.abs(head.x - fx) < 5 && Math.abs(head.y - fy) < 5) {
 				addBodySquare(i);
 			}
 		}
 
-		if (head.x < 0 || head.x > width || head.y < 0 || head.y > height) {
+		if (head.x < 0 || head.x > game.width || head.y < 8
+				|| head.y > game.height - 8) {
 
 			playing = false;
 		}
@@ -485,6 +491,7 @@ public class PlayScreen implements Screen {
 		addGoodFruit(fruitIndex);
 
 		speed += .5;
+		updateTimer();
 
 		// TODO Auto-generated method stub
 
@@ -492,7 +499,7 @@ public class PlayScreen implements Screen {
 		// timer.setDelay((int) (1000.0 / speed));
 		//
 
-		score++;
+		game.score++;
 
 	}
 
@@ -500,10 +507,10 @@ public class PlayScreen implements Screen {
 
 		snakeBody.clear();
 		snakeColor.clear();
-		snakeBody.add(new Point(width / 2, height / 2));
-		snakeBody.add(new Point(width / 2, height / 2 + 10));
-		snakeBody.add(new Point(width / 2, height / 2 + 20));
-		snakeBody.add(new Point(width / 2, height / 2 + 30));
+		snakeBody.add(new Point(game.width / 2, game.height / 2));
+		snakeBody.add(new Point(game.width / 2, game.height / 2 + 10));
+		snakeBody.add(new Point(game.width / 2, game.height / 2 + 20));
+		snakeBody.add(new Point(game.width / 2, game.height / 2 + 30));
 
 		for (int i = 0; i < snakeBody.size(); i++) {
 			// Whoop
@@ -512,8 +519,8 @@ public class PlayScreen implements Screen {
 
 		}
 
-		head.x = width / 2;
-		head.y = height / 2;
+		head.x = game.width / 2;
+		head.y = game.height / 2;
 		deltaY = -bodySize;
 		deltaX = 0;
 		speed = origSpeed;
@@ -540,16 +547,16 @@ public class PlayScreen implements Screen {
 
 		return ((int) (Math.random() * 50)) * 10 + 10;
 	}
-	
+
 	public int randX() {
-		
-		return ((int) (Math.random() * (width / 10))) * 10 + 10;
+
+		return ((int) (Math.random() * (game.width / 10))) * 10 + 10;
 	}
-	
+
 	public int randY() {
-		
-		return ((int) (Math.random() * (height / 10))) * 10 + 10;
-		
+
+		return ((int) (Math.random() * (game.height / 10))) * 10 + 10;
+
 	}
 
 	public void randFruitSetup() {
@@ -662,40 +669,35 @@ public class PlayScreen implements Screen {
 		game.g.setColor(Color.WHITE);
 
 	}
-	
+
 	public Fruit getFruit(Fruits fruit) {
-		
+
 		switch (fruit) {
-		
+
 		case apple:
-		
+
 			return new Fruit(Gdx.files.internal("apple.png"), Color.RED);
-			
-		
+
 		case orange:
 			return new Fruit(Gdx.files.internal("orange.png"), Color.ORANGE);
-		
-			
+
 		case strawberry:
-			
+
 			return new Fruit(Gdx.files.internal("strawberry.png"), Color.RED);
 		case pear:
-			
+
 			return new Fruit(Gdx.files.internal("pear.png"), Color.GREEN);
 		case banana:
-			
+
 			return new Fruit(Gdx.files.internal("banana.png"), Color.YELLOW);
 		case watermelon:
 			return new Fruit(Gdx.files.internal("watermelon.png"), Color.GREEN);
-		
+
 		default:
 			return new Fruit(Gdx.files.internal("apple.png"), Color.RED);
-				
-		}
-		
 
-		
-		
+		}
+
 	}
 
 }

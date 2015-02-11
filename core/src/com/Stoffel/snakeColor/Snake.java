@@ -17,6 +17,9 @@ public class Snake extends Game {
 	public ShapeRenderer g;
 	public BitmapFont font;
 	
+	public int score;
+	public int width = Window.WIDTH;
+	public int height = Window.HEIGHT;
 	
 	
 	@Override

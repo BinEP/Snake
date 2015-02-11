@@ -12,8 +12,8 @@ public class IOSLauncher extends IOSApplication.Delegate {
     protected IOSApplication createApplication() {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
         config.allowIpod = true;
-        config.orientationLandscape = true;
-        config.orientationPortrait = false;
+//        config.orientationLandscape = true;
+//        config.orientationPortrait = false;
         config.useAccelerometer = false;
         config.useCompass = false;
         
